@@ -1,0 +1,34 @@
+<li class="list-group-item">
+  <a href="{{ url_for('users_show', user_id=m.user.id) }}">
+    <img src="{{ m.user.image_url }}" alt="" class="timeline-image">
+  </a>
+
+  <div class="message-area">
+    <div class="message-heading">
+      <a href="/users/{{ m.user.id }}">@{{ m.user.username }}</a>
+
+      {% if g.user %}
+        {% if g.user.id == m.user.id %}
+          <!-- Delete button if it's your own message -->
+          <form method="POST" action="/messages/{{ m.id }}/delete" style="display:inline;">
+            <button class="btn btn-outline-danger btn-sm">Delete</button>
+          </form>
+        {% endif %}
+      {% endif %}
+    </div>
+
+    <p class="single-message">{{ m.text }}</p>
+    <span class="text-muted">{{ m.timestamp.strftime('%d %B %Y') }}</span>
+
+    <!-- 👇 Like button -->
+    {% if g.user %}
+      <form method="POST" action="/messages/{{ m.id }}/like" style="display:inline;">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="btn btn-sm {{ 'btn-secondary' if m in g.user.liked_messages else 'btn-outline-secondary' }}">
+          {{ 'Unlike' if m in g.user.liked_messages else 'Like' }}
+        </button>
+      </form>
+      
+    {% endif %}
+  </div>
+</li>

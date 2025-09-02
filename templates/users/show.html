@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="bg"></div>
+
+<div class="row justify-content-center">
+  <div class="col-md-6">
+
+    <!-- Profile header -->
+    <div class="card mb-3">
+      <div class="card-body d-flex align-items-center gap-3">
+        <img src="{{ user.image_url }}" alt="" class="timeline-image">
+        <div class="flex-grow-1">
+          <h5 class="mb-1">@{{ user.username }}</h5>
+          {% if user.bio %}
+            <p class="mb-1">{{ user.bio }}</p>
+          {% endif %}
+          {% if user.location %}
+            <small class="text-muted">📍 {{ user.location }}</small>
+          {% endif %}
+        </div>
+
+        {% if g.user and g.user.id != user.id %}
+          {% if g.user.is_following(user) %}
+            <form method="POST" action="/users/stop-following/{{ user.id }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> <!-- csrf -->
+              <button class="btn btn-primary">Unfollow</button>
+            </form>
+          {% else %}
+            <form method="POST" action="/users/follow/{{ user.id }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> <!-- csrf -->
+              <button class="btn btn-outline-primary">Follow</button>
+            </form>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- User's messages -->
+    <ul class="list-group no-hover" id="messages">
+      {% if messages and messages|length %}
+        {% for m in messages %}
+          {% include "messages/_message.html" %}
+        {% endfor %}
+      {% else %}
+        <li class="list-group-item text-center text-muted">
+          No messages yet.
+        </li>
+      {% endif %}
+    </ul>
+
+  </div>
+</div>
+
+{% endblock %}
